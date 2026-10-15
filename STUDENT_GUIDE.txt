@@ -1,0 +1,27 @@
+HOSPITAL PATIENT REGISTRATION SYSTEM — STUDENT GUIDE
+
+TECHNOLOGY
+- Frontend: HTML, CSS, JavaScript
+- Backend: Java 17 HTTP server
+- Database: SQLite locally; Supabase PostgreSQL for hosted Render deployment
+- JDBC drivers are downloaded by Maven during Docker build
+
+RENDER + SUPABASE
+1. Create a Supabase project.
+2. Copy its PostgreSQL Session Pooler connection URI from Connect/Database.
+3. Upload the contents of this folder to GitHub (contents, not the parent folder).
+4. Create a Render Blueprint from the repository.
+5. Set DATABASE_URL to the complete Supabase PostgreSQL URI.
+6. Deploy, then check logs for “Database mode: Supabase/PostgreSQL”.
+7. Add a fictional patient and refresh to verify persistence.
+
+ENVIRONMENT VARIABLE
+Key: DATABASE_URL
+Value: the full Supabase PostgreSQL Session Pooler URI.
+Do not use Supabase anon/public or service_role keys. Do not commit the URI to GitHub.
+
+LOCAL RUN
+Install JDK 17+ and Maven, then run: mvn clean compile exec:java
+Open http://localhost:8080. Without DATABASE_URL the app uses local SQLite.
+
+This is a college demo without authentication. Do not use real patient data.

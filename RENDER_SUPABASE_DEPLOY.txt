@@ -1,0 +1,15 @@
+JAVA BACKEND: RENDER + SUPABASE
+================================
+1. Push the contents of java-backend/ to a separate GitHub repository. Dockerfile, pom.xml, render.yaml and src/ must be at the repository root.
+2. Create a Supabase project. In Supabase, copy the PostgreSQL connection URI (Session Pooler recommended).
+3. In Render, create a Blueprint from this repository, or create a Docker Web Service.
+4. Add environment variable DATABASE_URL = full Supabase PostgreSQL connection URI. Do not use anon/service-role API keys here.
+5. Set FRONTEND_ORIGIN to your deployed Vercel URL, e.g. https://your-project.vercel.app. During first test, '*' is the default if omitted; use the exact origin for deployment.
+6. Deploy and copy the Render service URL.
+7. Put that URL in frontend/config.js as window.HOSPITAL_API_BASE_URL, then redeploy the Vercel frontend.
+8. The Java app creates the patients table automatically at startup.
+
+NOTES
+- Vercel does not run this Java backend directly. Keep Java backend on Render, frontend on Vercel, and SQL data in Supabase.
+- Keep DATABASE_URL private. Never commit credentials to GitHub.
+- Educational demo only; do not use real patient data.
