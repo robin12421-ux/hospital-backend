@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CustomerLens — Customer Behavior Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head><body>
+<div class="layout">
+<aside class="sidebar">
+  <a class="brand" href="#overview"><div class="brand-icon">C</div><div><b>CustomerLens</b><small>BEHAVIOR ANALYTICS</small></div></a>
+  <div class="nav-label">WORKSPACE</div>
+  <a class="nav {% if page == 'dashboard' %}active{% endif %}" href="#overview"><span>◫</span> Dashboard</a>
+  <a class="nav {% if page == 'insights' %}active{% endif %}" href="#insights"><span>⌁</span> Customer insights</a>
+  <a class="nav {% if page == 'statistics' %}active{% endif %}" href="#statistics"><span>▤</span> Statistics lab</a>
+  <a class="nav {% if page == 'dataset' %}active{% endif %}" href="#dataset"><span>▦</span> Dataset explorer</a>
+  
+  <div class="side-note"><div class="spark">✦</div><b>Data tells a story.</b><p>Turn customer data into practical business decisions.</p></div>
+  <div class="profile"><div class="avatar">CL</div><div><b>Mini Project</b><small>Python · Statistics · EDA</small></div><span class="online"></span></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><div class="eyebrow">CUSTOMER INTELLIGENCE / DASHBOARD</div><h1>Analyzing Customer Behavior</h1><p class="subtitle">Explore spending patterns, customer segments, and data quality in one place.</p></div><div class="top-actions"><span class="live"><i></i> LOCAL ANALYTICS</span><button class="btn light" onclick="resetData()">↻ Reset demo</button></div></header>
+{% with messages = get_flashed_messages() %}{% if messages %}<div class="flash">{% for m in messages %}{{m}}{% endfor %}</div>{% endif %}{% endwith %}
+<section id="overview" class="metrics">
+ <article class="metric"><div class="metric-top"><span>Total customers</span><span class="metric-icon violet">♙</span></div><strong id="mRows">{{rows}}</strong><small><b class="green">●</b> Records in active dataset</small></article>
+ <article class="metric"><div class="metric-top"><span>Data completeness</span><span class="metric-icon green-bg">✓</span></div><strong id="mComplete">—</strong><small>Based on non-missing cells</small></article>
+ <article class="metric"><div class="metric-top"><span>Duplicate records</span><span class="metric-icon amber">⧉</span></div><strong id="mDup">—</strong><small>Exact duplicate rows detected</small></article>
+ <article class="metric"><div class="metric-top"><span>Data columns</span><span class="metric-icon blue">▦</span></div><strong id="mCols">{{cols}}</strong><small>Customer attributes available</small></article>
+</section>
+<section class="content-grid">
+ <article class="panel wide" id="insights"><div class="panel-head"><div><div class="eyebrow">CUSTOMER SEGMENTATION</div><h2>Who are your customers?</h2><p>Compare the number of records in each segment.</p></div><span class="pill">Categorical analysis</span></div><div class="chart-wrap"><canvas id="segmentChart"></canvas></div><div id="segmentSummary" class="insight-line">Loading customer segments…</div></article>
+ <article class="panel"><div class="panel-head"><div><div class="eyebrow">SPENDING PROFILE</div><h2>Spending score bands</h2><p>Low, medium, and high spenders.</p></div></div><div class="chart-wrap doughnut"><canvas id="spendChart"></canvas></div><div id="spendSummary" class="legend-summary"></div></article>
+ <article class="panel"><div class="panel-head"><div><div class="eyebrow">RELATIONSHIP EXPLORER</div><h2>Income vs spending</h2><p>Basic bivariate analysis.</p></div></div><div class="chart-wrap"><canvas id="scatterChart"></canvas></div><div id="corrSummary" class="insight-line">Correlation will appear when the expected columns are available.</div></article>
+ <article class="panel wide" id="statistics"><div class="panel-head"><div><div class="eyebrow">DESCRIPTIVE STATISTICS</div><h2>Statistics lab</h2><p>Central tendency and dispersion for numerical columns.</p></div><span class="pill">Mean · Median · Mode · Variance · SD</span></div><div class="table-scroll"><table><thead><tr><th>Variable</th><th>Mean</th><th>Median</th><th>Mode</th><th>Variance</th><th>Std. deviation</th><th>Min–Max</th></tr></thead><tbody id="statsBody"><tr><td colspan="7">Loading statistics…</td></tr></tbody></table></div></article>
+ <article class="panel" id="dataset"><div class="panel-head"><div><div class="eyebrow">DATA QUALITY</div><h2>Preprocessing toolkit</h2><p>Clean missing values and duplicate rows.</p></div></div><div class="quality-list"><div><span>Missing cells</span><b id="missingCount">—</b></div><div><span>Outlier counts (IQR)</span><b id="outlierCount">—</b></div><div><span>Data completeness</span><b id="qualityPercent">—</b></div></div><div class="actions"><button class="btn primary" onclick="cleanData()">✦ Clean dataset</button><a class="btn light" href="/api/export">↓ Export CSV</a></div><p class="micro">Cleaning removes exact duplicate rows and fills missing numeric values with the median and categorical values with the mode.</p></article>
+ <article class="panel"><div class="panel-head"><div><div class="eyebrow">BRING YOUR DATA</div><h2>Upload a CSV</h2><p>Use your own customer dataset.</p></div></div><form class="upload-form" action="/upload" method="post" enctype="multipart/form-data"><label class="dropzone"><span class="upload-symbol">↑</span><b>Choose a .csv file</b><small>Maximum 100,000 rows · 60 columns</small><input type="file" name="dataset" accept=".csv" required></label><button class="btn primary full" type="submit">Load dataset</button></form><div class="file-name">Active file: <b id="fileName">{{filename}}</b></div></article>
+ <article class="panel wide"><div class="panel-head"><div><div class="eyebrow">DATA PREVIEW</div><h2>Customer records</h2><p>First rows from the currently loaded dataset.</p></div><span class="pill" id="previewCount">Preview</span></div><div class="table-scroll"><table><thead id="previewHead"></thead><tbody id="previewBody"></tbody></table></div></article>
+</section>
+<footer>CustomerLens <span>•</span> Flask · Pandas · NumPy · Chart.js</footer>
+</main></div>
+<div id="toast" class="toast"></div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body></html>
